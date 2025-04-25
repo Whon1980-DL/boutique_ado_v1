@@ -14,14 +14,16 @@ def add_to_bag(request, item_id):
 
     quantity = int(request.POST.get('quantity'))
     redirect_url = request.POST.get('redirect_url')
+    # Retrive the user's bag from the session, or create a new one
     bag = request.session.get('bag', {})
 
+    # Add quantity to exiting item or create new one
     if item_id in list(bag.keys()):
         bag[item_id] += quantity
     else:
         bag[item_id] = quantity
 
+    # Update the session data
     request.session['bag'] = bag
-    print(request.session['bag'])
     return redirect(redirect_url)
 
