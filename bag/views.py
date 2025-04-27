@@ -14,14 +14,27 @@ def add_to_bag(request, item_id):
 
     quantity = int(request.POST.get('quantity'))
     redirect_url = request.POST.get('redirect_url')
+    size = None
+    if 'product_size' in request.POST:
+        size = request.POST['product_size']
+
     # Retrive the user's bag from the session, or create a new one
     bag = request.session.get('bag', {})
 
-    # Add quantity to exiting item or create new one
-    if item_id in list(bag.keys()):
-        bag[item_id] += quantity
+    if size:
+        if item_id in list(bag.keys()):
+            if size in bag[item_id]['items_by_size'].keys():  # Check if item with same ID and same size already exist
+                bag[item_id]['items_by_size'][size] += quantity
+            else:
+                bag[item_id]['items_by_size'][size] = quantity
+        else:
+            bag[item_id] = {'items_by_size': {size: quantity}}
     else:
-        bag[item_id] = quantity
+        # Add quantity to existing item or create new one
+        if item_id in list(bag.keys()):
+            bag[item_id] += quantity
+        else:
+            bag[item_id] = quantity
 
     # Update the session data
     request.session['bag'] = bag
