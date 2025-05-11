@@ -51,10 +51,12 @@ form.addEventListener('submit', function(ev) {
         ev.preventDefault();
         card.update({ 'disable': true});
         $('#submit-button').attr('disabled', true);
-    stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-            card: card,
-        }
+        $('#payment-form').fadeToggle(100);
+        $('#loading-overlay').fadeToggle(100);
+        stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: card,
+            }
     }).then(function(result) {
         if (result.error) {
             var errorDiv = document.getElementById('card-errors');
@@ -64,6 +66,8 @@ form.addEventListener('submit', function(ev) {
                 </span>
                 <span>${result.error.message}</span>`;
             $(errorDiv).html(html);
+            $('#payment-form').fadeToggle(100);
+            $('#loading-overlay').fadeToggle(100);
             card.update({ 'disable': false});
             $('#submit-button').attr('disabled', false);
         } else {
